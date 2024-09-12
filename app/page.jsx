@@ -15,14 +15,13 @@ const Home = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState("lahore");
   const [error, setError] = useState(null);
-  // const [isLoading, setisLoading] = useState(false);
 
   async function fetchData(cityName) {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/weather?address=" + cityName
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=f2ba159db873d928cf7fa2d358c710f9`
       );
-      const jsonData = (await response.json()).data;
+      const jsonData = await response.json();
       setWeatherData(jsonData);
       setError(null);
     } catch (error) {
@@ -31,37 +30,12 @@ const Home = () => {
     }
   }
 
-  async function fetchDataByCoordinates(latitude, longitude) {
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/weather?lat=${latitude}&lon=${longitude}`
-      );
-      const jsonData = (await response.json()).data;
-      setWeatherData(jsonData);
-      setError(null);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Invalid location. Please try again.");
-    }
-  }
-
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchDataByCoordinates(latitude, longitude);
-        },
-        (error) => {
-          console.error("Error getting geolocation:", error);
-          setError("Unable to access your location. Please try again.");
-        }
-      );
-    }
+    fetchData(city);
   }, []);
 
   return (
-    <main className="h-screen flex justify-center items-center">
+    <main className="h-screen flex flex-col justify-center items-center">
       <article className="bg-slate-50 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <form
           className="flex flex-wrap -mx-3 mb-6"
